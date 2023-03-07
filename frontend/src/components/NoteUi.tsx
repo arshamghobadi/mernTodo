@@ -1,11 +1,12 @@
 import { Note as NoteModel } from '../typing/note';
 import { formateDate } from '../utils/formatDate';
-
+import { HiTrash } from 'react-icons/hi2';
 type Props = {
   note: NoteModel;
+  onDeleteNoteClicked: (note: NoteModel) => void;
 };
 
-const NoteUi = ({ note }: Props) => {
+const NoteUi = ({ note, onDeleteNoteClicked }: Props) => {
   const { title, text, createdAt, updatedAt } = note;
   let createdUpdatedText: string;
   if (updatedAt > createdAt) {
@@ -21,6 +22,12 @@ const NoteUi = ({ note }: Props) => {
       <div>{text}</div>
 
       <div>{createdUpdatedText}</div>
+      <HiTrash
+        onClick={(e) => {
+          onDeleteNoteClicked(note);
+          e.stopPropagation();
+        }}
+      />
     </div>
   );
 };
