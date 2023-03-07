@@ -5,19 +5,34 @@ import * as NotesApi from '../network/notes_api';
 import { Note } from '../typing/note';
 
 type Props = {
+  noteToEdit?: Note;
   onDismiss: () => void;
   onNoteSaved: (note: Note) => void;
 };
 
-export default function AddNoteDialog({ onDismiss, onNoteSaved }: Props) {
+export default function AddNoteDialog({
+  noteToEdit,
+  onDismiss,
+  onNoteSaved,
+}: Props) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<NoteInput>();
+  } = useForm<NoteInput>({
+    defaultValues: {
+      title: noteToEdit?.title || '',
+      text: noteToEdit?.text || '',
+    },
+  });
   async function onSubmit(input: NoteInput) {
     try {
-      const noteResponse = await NotesApi.createNote(input);
+      let noteResponse: Note;
+      if (noteToEdit) {
+        noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
+      } else {
+        noteResponse = await NotesApi.createNote(input);
+      }
       onNoteSaved(noteResponse);
     } catch (error) {
       console.error(error);
