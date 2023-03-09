@@ -1,3 +1,4 @@
+import { requiresAuth } from './middleware/auth';
 import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
 import notesRoutes from './routes/notes';
@@ -17,7 +18,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60 * 60 * 1000,
+      maxAge: 60 * 60 * 60 * 1000,
     },
     rolling: true,
     store: MongoStore.create({
@@ -27,7 +28,7 @@ app.use(
 );
 
 app.use('/api/users', userRoutes);
-app.use('/api/notes', notesRoutes);
+app.use('/api/notes', requiresAuth, notesRoutes);
 
 app.use((req, res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
